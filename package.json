@@ -5,9 +5,9 @@
   "scripts": {
     "build": "dune build",
     "dev": "dune build && concurrently 'npm:vite-dev' 'npm:dune-watch'",
-    "dune-watch": "dune build -w",
+    "dune-watch": "dune build -w --color=always'",
     "serve": "dune build && vite preview",
-    "vite-dev": "cd ../ && vite test"
+    "vite-dev": "vite"
   },
   "dependencies": {
   },

@@ -2,21 +2,21 @@ type unresolved
 
 type xmlHttpRequestUpload
 
-type event_readystatechange = Web_json.t
+type event_readystatechange = Js.Json.t
 
-type event_abort = Web_json.t
+type event_abort = Js.Json.t
 
-type event_error = Web_json.t
+type event_error = Js.Json.t
 
-type event_load = Web_json.t
+type event_load = Js.Json.t
 
-type event_loadstart = Web_json.t
+type event_loadstart = Js.Json.t
 
-type event_progress = Web_json.t
+type event_progress = Js.Json.t
 
-type event_timeout = Web_json.t
+type event_timeout = Js.Json.t
 
-type event_loadend = Web_json.t
+type event_loadend = Js.Json.t
 
 type t
 
@@ -229,7 +229,7 @@ type responseBody =
   | ArrayBufferResponse of unit
   | BlobResponse of unit
   | DocumentResponse of Webapi.Dom.Document.t
-  | JsonResponse of Web_json.t
+  | JsonResponse of Js.Json.t
   | TextResponse of string
   | RawResponse of string * unit
 

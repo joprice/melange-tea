@@ -1,12 +1,3 @@
-(* type t = *)
-(*   < length: int [@mel.get] *)
-(*   ; clear: unit -> unit [@mel.meth] *)
-(*   ; key: int -> string [@mel.meth] *)
-(*   ; getItem: string -> string [@mel.meth] *)
-(*   ; removeItem: string -> unit [@mel.meth] *)
-(*   ; setItem: string -> string -> unit [@mel.meth] > *)
-(*   Js.t *)
-
 open struct
   external local_storage : Webapi.Dom.Window.t -> Dom.Storage.t option
     = "localStorage"

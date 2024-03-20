@@ -23,8 +23,7 @@ module Decoder = struct
   let string =
     Decoder
       (fun value ->
-        let open Web.Json in
-        match classify value with
+        match Js.Json.classify value with
         | JSONString s ->
             Tea_result.Ok s
         | _ ->
@@ -33,8 +32,7 @@ module Decoder = struct
   let int =
     Decoder
       (fun value ->
-        let open Web.Json in
-        match classify value with
+        match Js.Json.classify value with
         | JSONNumber n ->
             if n > float_of_int min_int && n < float_of_int max_int then
               Tea_result.Ok (int_of_float n)
@@ -45,8 +43,7 @@ module Decoder = struct
   let float =
     Decoder
       (fun value ->
-        let open Web.Json in
-        match classify value with
+        match Js.Json.classify value with
         | JSONNumber n ->
             Tea_result.Ok n
         | _ ->
@@ -55,8 +52,7 @@ module Decoder = struct
   let bool =
     Decoder
       (fun value ->
-        let open Web.Json in
-        match classify value with
+        match Js.Json.classify value with
         | JSONTrue ->
             Tea_result.Ok true
         | JSONFalse ->
@@ -67,8 +63,7 @@ module Decoder = struct
   let null v =
     Decoder
       (fun value ->
-        let open Web.Json in
-        match classify value with
+        match Js.Json.classify value with
         | JSONNull ->
             Tea_result.Ok v
         | _ ->
@@ -79,8 +74,7 @@ module Decoder = struct
   let list (Decoder decoder) =
     Decoder
       (fun value ->
-        let open Web.Json in
-        match classify value with
+        match Js.Json.classify value with
         | JSONArray a -> (
             let parse v =
               match decoder v with
@@ -97,8 +91,7 @@ module Decoder = struct
   let array (Decoder decoder) =
     Decoder
       (fun value ->
-        let open Web.Json in
-        match classify value with
+        match Js.Json.classify value with
         | JSONArray a -> (
             let parse v =
               match decoder v with
@@ -115,8 +108,7 @@ module Decoder = struct
   let keyValuePairs (Decoder decoder) =
     Decoder
       (fun value ->
-        let open Web.Json in
-        match classify value with
+        match Js.Json.classify value with
         | JSONObject o -> (
             let keys = Js.Dict.keys o in
             let parse k l =
@@ -139,8 +131,7 @@ module Decoder = struct
   let dict (Decoder decoder) =
     Decoder
       (fun value ->
-        let open Web.Json in
-        match classify value with
+        match Js.Json.classify value with
         | JSONObject o -> (
             let keys = Js.Dict.keys o in
             let parse k d =
@@ -164,8 +155,7 @@ module Decoder = struct
   let field key (Decoder decoder) =
     Decoder
       (fun value ->
-        let open Web.Json in
-        match classify value with
+        match Js.Json.classify value with
         | JSONObject o -> (
           match Js.Dict.get o key with
           | None ->
@@ -184,8 +174,7 @@ module Decoder = struct
   let index idx (Decoder decoder) =
     Decoder
       (fun value ->
-        let open Web.Json in
-        match classify value with
+        match Js.Json.classify value with
         | JSONArray a ->
             if idx < 0 || idx > Array.length a then
               Tea_result.Error ("Array index out of range: " ^ string_of_int idx)
@@ -421,7 +410,7 @@ module Decoder = struct
 
   let decodeString decoder string =
     try
-      let value = Web.Json.parseExn string in
+      let value = Js.Json.parseExn string in
       decodeValue decoder value
     with
     (* | JsException e -> Tea_result.Error ("Given an invalid JSON: " ^ e) *)
@@ -432,7 +421,7 @@ end
 module Encoder = struct
   open Web
 
-  type t = Json.t
+  type t = Js.Json.t
 
   let encode indentLevel value =
     Web.Json.string_of_json ~indent:indentLevel (Js.Undefined.return value)

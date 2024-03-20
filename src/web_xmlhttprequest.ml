@@ -30,7 +30,7 @@ type body =
   | StringBody of string
   | FormDataBody of Webapi.FormData.t
   | FormListBody of (string * string) list
-  | DocumentBody of Web_document.t
+  | DocumentBody of Webapi.Dom.Document.t
 (* | BlobBody of Web_blob.t *)
 (* | ArrayBufferViewBody of Web_arraybuffer_view.t *)
 
@@ -52,7 +52,8 @@ module Internal = struct
   external send_formdata : Webapi.FormData.t -> unit = "send"
   [@@mel.send.pipe: t]
 
-  external send_document : Web_document.t -> unit = "send" [@@mel.send.pipe: t]
+  external send_document : Webapi.Dom.Document.t -> unit = "send"
+  [@@mel.send.pipe: t]
 
   external setRequestHeader : string -> string -> unit = "setRequestHeader"
   [@@mel.send.pipe: t]
@@ -78,7 +79,8 @@ module Internal = struct
 
   external responseURL : t -> string = "responseURL" [@@mel.get]
 
-  external responseXML : t -> Web_document.t Js.null = "responseXML" [@@mel.get]
+  external responseXML : t -> Webapi.Dom.Document.t Js.null = "responseXML"
+  [@@mel.get]
 
   external status : t -> int = "status" [@@mel.get]
 
@@ -226,7 +228,7 @@ type responseBody =
   | StringResponse of string
   | ArrayBufferResponse of unit
   | BlobResponse of unit
-  | DocumentResponse of Web_document.t
+  | DocumentResponse of Webapi.Dom.Document.t
   | JsonResponse of Web_json.t
   | TextResponse of string
   | RawResponse of string * unit
@@ -312,7 +314,7 @@ let get_responseText (x : t) : string = x |> Internal.responseText
 
 let get_responseURL (x : t) : string = x |> Internal.responseURL
 
-let get_responseXML (x : t) : Web_document.t option =
+let get_responseXML (x : t) : Webapi.Dom.Document.t option =
   Js.Null.toOption (x |> Internal.responseXML)
 
 let get_status (x : t) : int = x |> Internal.status

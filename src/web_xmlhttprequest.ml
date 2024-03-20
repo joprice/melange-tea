@@ -18,48 +18,6 @@ type event_timeout = Web_json.t
 
 type event_loadend = Web_json.t
 
-(* class type _xmlhttprequest = object *)
-(*   (* Methods *) *)
-(*   method abort : unit -> unit [@@mel.meth] *)
-(*   method getAllResponseHeaders : unit -> string Js.null *)
-(*   method getResponseHeader : string -> string Js.null *)
-(*   method _open : string -> string -> bool -> string -> string -> unit *)
-(*   method overrideMimeType : string -> unit *)
-(*   method send : unit -> unit *)
-(*   method send__string : string Js.null -> unit *)
-(*   method send__formdata : Web_formdata.t -> unit *)
-(*   method send__document : Web_document.t -> unit *)
-(*  *)
-(*   (* method send_blob : Web_blob.t -> unit *) *)
-(*   (* method send_arrayBufferView : Web_arraybuffer_view.t -> unit *) *)
-(*   method setRequestHeader : string -> string -> unit *)
-(*  *)
-(*   (* Properties *) *)
-(*   method onreadystatechange : event_readystatechange -> unit *)
-(*   [@@mel.get] [@@mel.set] *)
-(*  *)
-(*   method readyState : int [@@mel.get] *)
-(*   method responseType : string [@@mel.get] [@@mel.set] *)
-(*   method response : unresolved Js.null [@@mel.get] *)
-(*   method responseText : string [@@mel.get] *)
-(*   method responseURL : string [@@mel.get] *)
-(*   method responseXML : Web_document.t Js.null [@@mel.get] *)
-(*   method status : int [@@mel.get] *)
-(*   method statusText : string [@@mel.get] *)
-(*   method timeout : float [@@mel.get] [@@mel.set] *)
-(*   method upload : xmlHttpRequestUpload [@@mel.get] *)
-(*   method withCredentials : bool [@@mel.get] [@@mel.set] *)
-(*  *)
-(*   (* Base events *) *)
-(*   method onabort : event_abort -> unit [@@mel.get] [@@mel.set] *)
-(*   method onerror : event_error -> unit [@@mel.get] [@@mel.set] *)
-(*   method onload : event_load -> unit [@@mel.get] [@@mel.set] *)
-(*   method onloadstart : event_loadstart -> unit [@@mel.get] [@@mel.set] *)
-(*   method onprogress : event_loadstart -> unit [@@mel.get] [@@mel.set] *)
-(*   method ontimeout : event_timeout -> unit [@@mel.get] [@@mel.set] *)
-(*   method onloadend : event_loadend -> unit [@@mel.get] [@@mel.set] *)
-(* end[@mel] *)
-(*  *)
 type t
 
 external create : unit -> t = "XMLHttpRequest" [@@mel.new]
@@ -171,16 +129,6 @@ module Internal = struct
 
   external open_ : string -> string -> bool -> string -> string -> unit = "open"
   [@@mel.send.pipe: t]
-
-  (* external set_onloadend : event_loadend event -> unit = "onloadend" *)
-  (* [@@mel.send.pipe: t] *)
-  (*  *)
-  (* external onloadend : t -> event_loadend event = "onloadend" [@@mel.get] *)
-
-  (*   method onloadstart : event_loadstart -> unit [@@mel.get] [@@mel.set] *)
-  (*   method onprogress : event_loadstart -> unit [@@mel.get] [@@mel.set] *)
-  (*   method ontimeout : event_timeout -> unit [@@mel.get] [@@mel.set] *)
-  (*   method onreadystatechange : event_readystatechange -> unit *)
 end
 
 let abort (x : t) : unit = x |> Internal.abort

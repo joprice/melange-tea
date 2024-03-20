@@ -5,7 +5,7 @@
   "scripts": {
     "build": "dune build",
     "dev": "dune build && concurrently 'npm:vite-dev' 'npm:dune-watch'",
-    "dune-watch": "dune build -w --color=always'",
+    "dune-watch": "CLICOLOR_FORCE=1 dune build -w",
     "serve": "dune build && vite preview",
     "vite-dev": "vite"
   },

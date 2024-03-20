@@ -169,10 +169,8 @@ let programLoop update view subscriptions initModel initCmd = function
             | None ->
                 ()
             | ((Some firstChild) [@explicit_arity]) ->
-                Js.log4 "removing  " parentNode "child" firstChild ;
                 let _removedChild =
                   parentNode |> Webapi.Dom.Node.removeChild firstChild
-                  (* Web.Node.removeChild parentNode firstChild *)
                 in
                 ()
           done

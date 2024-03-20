@@ -4,13 +4,14 @@ let cmd promise tagger =
       let _ =
         promise
         |> Js.Promise.then_ (function res ->
-               (match tagger res with
+               ( match tagger res with
                | Some msg ->
                    let () = !callbacks.enqueue msg in
                    Js.Promise.resolve ()
-               | None -> Js.Promise.resolve ()))
+               | None ->
+                   Js.Promise.resolve () ) )
       in
-      ())
+      () )
 
 let result promise msg =
   let open Vdom in
@@ -20,11 +21,11 @@ let result promise msg =
         promise
         |> Js.Promise.then_ (function res ->
                let resolve = enq (Tea_result.Ok res) in
-               Js.Promise.resolve resolve)
+               Js.Promise.resolve resolve )
         |> Js.Promise.catch (function err ->
                (* let err_to_string err = {j|$err|j} in *)
                (* TODO: stringify promise error? *)
                let reject = enq (Tea_result.Error err) in
-               Js.Promise.resolve reject)
+               Js.Promise.resolve reject )
       in
-      ())
+      () )

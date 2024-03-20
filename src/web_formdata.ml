@@ -5,6 +5,6 @@ class type _formdata = object
 end [@bs]
 type t = _formdata Js.t
 
-external create : unit -> t = "FormData" [@@bs.new]
+external create : unit -> t = "FormData" [@@mel.new]
 
 let append key value f = f##append key value

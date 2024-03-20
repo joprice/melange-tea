@@ -22,8 +22,8 @@ open Tea; /* Reason/OCaml Bucklescript-TEA component, as seen in existing exampl
 Js.log("Hello, from BuckleScript and Reason!");
 
 type document; /* abstract type for a document object */
-[@bs.send] external getElementById: (document, string) => Js.null_undefined(Web.Node.t) = "getElementById";
-[@bs.val] external doc: document = "document";
+[@mel.send] external getElementById: (document, string) => Js.null_undefined(Web.Node.t) = "getElementById";
+[@mel.val] external doc: document = "document";
 
 type action = RenderMain;
 type state = Start | Initialized;
@@ -41,7 +41,7 @@ let getHtmlString: getHtmlString = () => "";
 
 type interface = (unit) => Tea_app.programInterface(msg);
 
-[@bs.obj]
+[@mel.obj]
 external makeProgramInterface:
   (
     ~pushMsg: 'msg => unit,

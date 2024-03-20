@@ -6,11 +6,14 @@
     in
     with pkgs; {
       devShells.default = mkShell {
-        buildInputs = with ocamlPackages; [
+        nativeBuildInputs = with ocamlPackages; [
           dune
           ocaml
           ocaml-lsp
           melange
+          melange-webapi
+          findlib
+          ocamlformat
         ];
       };
     }));

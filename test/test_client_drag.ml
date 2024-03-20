@@ -7,7 +7,7 @@ type msg =
   | DragStart of position
   | DragAt of position
   | DragEnd of position
-[@@bs.deriving {accessors}]
+[@@mel.deriving {accessors}]
 
 
 type drag =

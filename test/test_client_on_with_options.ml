@@ -3,7 +3,7 @@ open Tea.App
 type msg =
   | Click
   | Set_value of int
-  [@@bs.deriving {accessors}]
+  [@@mel.deriving {accessors}]
 
 
 let update model = function

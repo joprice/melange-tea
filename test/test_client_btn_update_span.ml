@@ -3,7 +3,7 @@ open Tea.Html
 
 type msg =
   | Trigger
-[@@bs.deriving {accessors}]
+[@@mel.deriving {accessors}]
 
 type model = (string option * string option)
 

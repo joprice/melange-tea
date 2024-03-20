@@ -28,31 +28,31 @@ class type _xmlhttprequest = object
   method setRequestHeader : string -> string -> unit
 
   (* Properties *)
-  method onreadystatechange : (event_readystatechange -> unit) [@@bs.get] [@@bs.set]
-  method readyState : int [@@bs.get]
-  method responseType : string [@@bs.get] [@@bs.set]
-  method response : unresolved Js.null [@@bs.get]
-  method responseText : string [@@bs.get]
-  method responseURL : string [@@bs.get]
-  method responseXML : Web_document.t Js.null [@@bs.get]
-  method status : int [@@bs.get]
-  method statusText : string [@@bs.get]
-  method timeout : float [@@bs.get] [@@bs.set]
-  method upload : xmlHttpRequestUpload [@@bs.get]
-  method withCredentials : bool [@@bs.get] [@@bs.set]
+  method onreadystatechange : (event_readystatechange -> unit) [@@mel.get] [@@mel.set]
+  method readyState : int [@@mel.get]
+  method responseType : string [@@mel.get] [@@mel.set]
+  method response : unresolved Js.null [@@mel.get]
+  method responseText : string [@@mel.get]
+  method responseURL : string [@@mel.get]
+  method responseXML : Web_document.t Js.null [@@mel.get]
+  method status : int [@@mel.get]
+  method statusText : string [@@mel.get]
+  method timeout : float [@@mel.get] [@@mel.set]
+  method upload : xmlHttpRequestUpload [@@mel.get]
+  method withCredentials : bool [@@mel.get] [@@mel.set]
 
   (* Base events *)
-  method onabort : (event_abort -> unit) [@@bs.get] [@@bs.set]
-  method onerror : (event_error -> unit) [@@bs.get] [@@bs.set]
-  method onload : (event_load -> unit) [@@bs.get] [@@bs.set]
-  method onloadstart : (event_loadstart -> unit) [@@bs.get] [@@bs.set]
-  method onprogress : (event_loadstart -> unit) [@@bs.get] [@@bs.set]
-  method ontimeout : (event_timeout -> unit) [@@bs.get] [@@bs.set]
-  method onloadend : (event_loadend -> unit) [@@bs.get] [@@bs.set]
-end [@bs]
+  method onabort : (event_abort -> unit) [@@mel.get] [@@mel.set]
+  method onerror : (event_error -> unit) [@@mel.get] [@@mel.set]
+  method onload : (event_load -> unit) [@@mel.get] [@@mel.set]
+  method onloadstart : (event_loadstart -> unit) [@@mel.get] [@@mel.set]
+  method onprogress : (event_loadstart -> unit) [@@mel.get] [@@mel.set]
+  method ontimeout : (event_timeout -> unit) [@@mel.get] [@@mel.set]
+  method onloadend : (event_loadend -> unit) [@@mel.get] [@@mel.set]
+end [@mel]
 type t = _xmlhttprequest Js.t
 
-external create : unit -> t = "XMLHttpRequest" [@@bs.new]
+external create : unit -> t = "XMLHttpRequest" [@@mel.new]
 
 type errors =
   | IncompleteResponse

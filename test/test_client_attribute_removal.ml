@@ -9,7 +9,7 @@ type model = {
 type message =
   | Select of string
   | Delete
-[@@bs.deriving {accessors}]
+[@@mel.deriving {accessors}]
 
 let render_selected = function
   | Some selected ->

@@ -36,17 +36,21 @@ open struct
     in
     Tea_sub.registration "navigation" enableCall
 
+  external historyState : 'a Js.Dict.t -> Webapi.Dom.History.state = "%identity"
+
   let replaceState url =
     let _ =
-      Web.Window.History.replaceState Web.Window.window (Js.Json.parseExn "{}")
-        "" url
+      Webapi.Dom.history
+      |> Webapi.Dom.History.replaceState
+           (historyState (Js.Dict.empty ()))
+           "" url
     in
     ()
 
   let pushState url =
     let _ =
-      Web.Window.History.pushState Web.Window.window (Js.Json.parseExn "{}") ""
-        url
+      Webapi.Dom.history
+      |> Webapi.Dom.History.pushState (historyState (Js.Dict.empty ())) "" url
     in
     ()
 end
@@ -65,7 +69,7 @@ let newUrl url =
 
 let go step =
   Tea_cmd.call (fun _enqueue ->
-      let _ = Web.Window.(History.go window) step in
+      let _ = Webapi.Dom.history |> Webapi.Dom.History.go step in
       let () = notifyUrlChange () in
       () )
 

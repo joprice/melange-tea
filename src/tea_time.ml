@@ -11,22 +11,22 @@ let every ~key interval tagger =
   let open Vdom in
   let enableCall callbacks =
     let id =
-      Web.Window.setInterval
-        (fun () -> callbacks.enqueue (tagger (Web.Date.now ())))
+      Js.Global.setInterval
+        ~f:(fun () -> callbacks.enqueue (tagger (Js.Date.now ())))
         interval
     in
     (* let () = Js.log ("Time.every", "enable", interval, tagger, callbacks) in *)
     fun () ->
       (* let () = Js.log ("Time.every", "disable", id, interval, tagger, callbacks) in *)
-      Web.Window.clearTimeout id
+      Js.Global.clearInterval id
   in
   Tea_sub.registration key enableCall
 
 let delay msTime msg =
   Tea_cmd.call (fun callbacks ->
       let _unhandledID =
-        Web.Window.setTimeout
-          (fun () ->
+        Js.Global.setTimeout
+          ~f:(fun () ->
             let open Vdom in
             !callbacks.enqueue msg )
           msTime

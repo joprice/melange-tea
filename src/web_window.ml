@@ -1,53 +1,58 @@
 (* TODO:  Polyfill window if it is missing, like on node or in native *)
 
-module History = Web_window_history
 module LocalStorage = Web_window_localstorage
 
-type timeoutHandlerID = int
-
-type t =
-  < history: History.t Js.Undefined.t [@mel.get]
-  ; location: Webapi.Dom.Location.t [@mel.get]
-  ; clearTimeout: timeoutHandlerID -> unit [@mel.meth]
-  ; requestAnimationFrame: (float -> unit) -> int [@mel.meth]
-  ; cancelAnimationFrame: int -> unit [@mel.meth]
-  ; setInterval: (unit -> unit) -> float -> timeoutHandlerID [@mel.meth]
-  ; setTimeout: (unit -> unit) -> float -> timeoutHandlerID [@mel.meth]
-  ; addEventListener:
-      string -> Web_node.t Web_event.cb -> Web_event.options -> unit
-        [@mel.meth]
-  ; removeEventListener:
-      string -> Web_node.t Web_event.cb -> Web_event.options -> unit
-        [@mel.meth]
-  ; localStorage: LocalStorage.t Js.Undefined.t [@mel.get] >
-  Js.t
-
-external window : t = "window" [@@mel.val]
-
-let history () = window##history
-
-let localStorage () = window##localStorage
-
-let location () = window##location
-
-(* requestAnimationFrame callback is a float timestamp in milliseconds *)
-let requestAnimationFrame callback = window##requestAnimationFrame callback
-
-let cancelAnimationFrame id = window##cancelAnimationFrame id
-
-let clearTimeout id = window##clearTimeout id
-
-let setInterval cb msTime = window##setInterval cb msTime
-
-let setTimeout cb msTime = window##setTimeout cb msTime
-
-let addEventListener typ listener options =
-  window##addEventListener typ listener options
-
-let removeEventListener typ listener options =
-  window##removeEventListener typ listener options
+(* module History = Web_window_history *)
+(*  *)
+(* type timeoutHandlerID = int *)
+(*  *)
+(* type t = *)
+(*   < history: History.t Js.Undefined.t [@mel.get] *)
+(*   ; location: Webapi.Dom.Location.t [@mel.get] *)
+(*   ; clearTimeout: timeoutHandlerID -> unit [@mel.meth] *)
+(*   ; requestAnimationFrame: (float -> unit) -> int [@mel.meth] *)
+(*   ; cancelAnimationFrame: int -> unit [@mel.meth] *)
+(*   ; setInterval: (unit -> unit) -> float -> timeoutHandlerID [@mel.meth] *)
+(*   ; setTimeout: (unit -> unit) -> float -> timeoutHandlerID [@mel.meth] *)
+(*   ; addEventListener: *)
+(*       string -> Web_node.t Web_event.cb -> Web_event.options -> unit *)
+(*         [@mel.meth] *)
+(*   ; removeEventListener: *)
+(*       string -> Web_node.t Web_event.cb -> Web_event.options -> unit *)
+(*         [@mel.meth] *)
+(*   ; localStorage: LocalStorage.t Js.Undefined.t [@mel.get] > *)
+(*   Js.t *)
+(*  *)
+(* external window : t = "window" [@@mel.val] *)
+(*  *)
+(* let history () = window##history *)
+(*  *)
+(* let localStorage () = window##localStorage *)
+(*  *)
+(* let location () = window##location *)
+(*  *)
+(* (* requestAnimationFrame callback is a float timestamp in milliseconds *) *)
+(* let requestAnimationFrame callback = window##requestAnimationFrame callback *)
+(*  *)
+(* let cancelAnimationFrame id = window##cancelAnimationFrame id *)
+(*  *)
+(* let clearTimeout id = window##clearTimeout id *)
+(*  *)
+(* let setInterval cb msTime = window##setInterval cb msTime *)
+(*  *)
+(* let setTimeout cb msTime = window##setTimeout cb msTime *)
+(*  *)
+(* let addEventListener typ listener options = *)
+(*   window##addEventListener typ listener options *)
+(*  *)
+(* let removeEventListener typ listener options = *)
+(*   window##removeEventListener typ listener options *)
 
 (* Polyfills *)
+
+(* requestAnimationFrame callback is a float timestamp in milliseconds *)
+external requestAnimationFrame : (float -> unit) -> int
+  = "requestAnimationFrame"
 
 let requestAnimationFrame_polyfill : unit -> unit =
  fun () ->

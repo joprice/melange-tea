@@ -10,45 +10,46 @@ external getStyle : style -> string -> string Js.null = "" [@@mel.get_index]
 external setStyle : style -> string -> string Js.null -> unit = ""
 [@@mel.set_index]
 
-type t =
-  < style: style [@mel.get]
-  ; value: string Js.undefined [@mel.set] [@mel.get]
-  ; checked: bool Js.undefined [@mel.set] [@mel.get]
-  ; childNodes: t Js.Array.t [@mel.get]
-  ; firstChild: t Js.Null.t [@mel.get]
-  ; appendChild: t -> t [@mel.meth]
-  ; removeChild: t -> t [@mel.meth]
-  ; insertBefore: t -> t -> t [@mel.meth]
-  ; remove: unit -> unit [@mel.meth]
-  ; setAttributeNS: string -> string -> string -> unit [@mel.meth]
-  ; setAttribute: string -> string -> unit [@mel.meth]
-  ; removeAttributeNS: string -> string -> unit [@mel.meth]
-  ; removeAttribute: string -> unit [@mel.meth]
-  ; addEventListener: string -> t Web_event.cb -> Web_event.options -> unit
-        [@mel.meth]
-  ; removeEventListener: string -> t Web_event.cb -> Web_event.options -> unit
-        [@mel.meth]
-  ; focus: unit -> unit [@mel.meth]
-  ; (* Text Nodes only *)
-  nodeValue: string [@mel.set] [@mel.get {null}] >
-  Js.t
+type t
+(* type t = *)
+(*   < style: style [@mel.get] *)
+(*   ; value: string Js.undefined [@mel.set] [@mel.get] *)
+(*   ; checked: bool Js.undefined [@mel.set] [@mel.get] *)
+(*   ; childNodes: t Js.Array.t [@mel.get] *)
+(*   ; firstChild: t Js.Null.t [@mel.get] *)
+(*   ; appendChild: t -> t [@mel.meth] *)
+(*   ; removeChild: t -> t [@mel.meth] *)
+(*   ; insertBefore: t -> t -> t [@mel.meth] *)
+(*   ; remove: unit -> unit [@mel.meth] *)
+(*   ; setAttributeNS: string -> string -> string -> unit [@mel.meth] *)
+(*   ; setAttribute: string -> string -> unit [@mel.meth] *)
+(*   ; removeAttributeNS: string -> string -> unit [@mel.meth] *)
+(*   ; removeAttribute: string -> unit [@mel.meth] *)
+(*   ; addEventListener: string -> t Web_event.cb -> Web_event.options -> unit *)
+(*         [@mel.meth] *)
+(*   ; removeEventListener: string -> t Web_event.cb -> Web_event.options -> unit *)
+(*         [@mel.meth] *)
+(*   ; focus: unit -> unit [@mel.meth] *)
+(*   ; (* Text Nodes only *) *)
+(*   nodeValue: string [@mel.set] [@mel.get {null}] > *)
+(*   Js.t *)
 
-external document_node : t = "document" [@@mel.val]
-
-type event = t Web_event.t
-
-type event_cb = t Web_event.cb
-
-external getProp_asEventListener : t -> 'key -> t Web_event.cb Js.undefined = ""
-[@@mel.get_index]
-
-external setProp_asEventListener :
-  t -> 'key -> t Web_event.cb Js.undefined -> unit = ""
-[@@mel.set_index]
-
-external getProp : t -> 'key -> 'value = "" [@@mel.get_index]
-
-external setProp : t -> 'key -> 'value -> unit = "" [@@mel.set_index]
+(* external document_node : t = "document" [@@mel.val] *)
+(*  *)
+(* type event = t Web_event.t *)
+(*  *)
+(* type event_cb = t Web_event.cb *)
+(*  *)
+(* external getProp_asEventListener : t -> 'key -> t Web_event.cb Js.undefined = "" *)
+(* [@@mel.get_index] *)
+(*  *)
+(* external setProp_asEventListener : *)
+(*   t -> 'key -> t Web_event.cb Js.undefined -> unit = "" *)
+(* [@@mel.set_index] *)
+(*  *)
+(* external getProp : t -> 'key -> 'value = "" [@@mel.get_index] *)
+(*  *)
+(* external setProp : t -> 'key -> 'value -> unit = "" [@@mel.set_index] *)
 
 let style n = n##style
 

@@ -1,50 +1,33 @@
-type t =
-  < length: int [@mel.get]
-  ; clear: unit -> unit [@mel.meth]
-  ; key: int -> string [@mel.meth]
-  ; getItem: string -> string [@mel.meth]
-  ; removeItem: string -> unit [@mel.meth]
-  ; setItem: string -> string -> unit [@mel.meth] >
-  Js.t
+(* type t = *)
+(*   < length: int [@mel.get] *)
+(*   ; clear: unit -> unit [@mel.meth] *)
+(*   ; key: int -> string [@mel.meth] *)
+(*   ; getItem: string -> string [@mel.meth] *)
+(*   ; removeItem: string -> unit [@mel.meth] *)
+(*   ; setItem: string -> string -> unit [@mel.meth] > *)
+(*   Js.t *)
 
-let length window =
-  match Js.Undefined.toOption window##localStorage with
-  | None ->
-      None
-  | Some localStorage ->
-      Some localStorage##length
+open struct
+  external local_storage : Webapi.Dom.Window.t -> Dom.Storage.t option
+    = "localStorage"
 
-let clear window =
-  match Js.Undefined.toOption window##localStorage with
-  | None ->
-      None
-  | Some localStorage ->
-      Some (localStorage##clear ())
+  let local_storage_fn f window =
+    match local_storage window with
+    | Some localStorage ->
+        Some (f localStorage)
+    | None ->
+        None
+end
 
-let key window idx =
-  match Js.Undefined.toOption window##localStorage with
-  | None ->
-      None
-  | Some localStorage ->
-      Some (localStorage##key idx)
+let length window = local_storage_fn Dom.Storage.length window
 
-let getItem window key =
-  match Js.Undefined.toOption window##localStorage with
-  | None ->
-      None
-  | Some localStorage -> (
-    try Some (localStorage##getItem key) with _ -> None )
+let clear window = local_storage_fn Dom.Storage.clear window
 
-let removeItem window key =
-  match Js.Undefined.toOption window##localStorage with
-  | None ->
-      None
-  | Some localStorage ->
-      Some (localStorage##removeItem key)
+let key idx window = local_storage_fn (Dom.Storage.key idx) window
 
-let setItem window key value =
-  match Js.Undefined.toOption window##localStorage with
-  | None ->
-      None
-  | Some localStorage ->
-      Some (localStorage##setItem key value)
+let getItem key window = local_storage_fn (Dom.Storage.getItem key) window
+
+let removeItem key window = local_storage_fn (Dom.Storage.removeItem key) window
+
+let setItem key value window =
+  local_storage_fn (Dom.Storage.setItem key value) window

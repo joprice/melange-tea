@@ -11,32 +11,31 @@ type 'msg t =
 
 let none = NoCmd
 
-let batch cmds = (Batch cmds [@explicit_arity])
+let batch cmds = Batch cmds
 
-let call call = (EnqueueCall call [@explicit_arity])
+let call call = EnqueueCall call
 
 let fnMsg fnMsg =
   let open Vdom in
-  (EnqueueCall (fun callbacks -> !callbacks.enqueue (fnMsg ()))
-  [@explicit_arity] )
+  EnqueueCall (fun callbacks -> !callbacks.enqueue (fnMsg ()))
 
 let msg msg =
   let open Vdom in
-  (EnqueueCall (fun callbacks -> !callbacks.enqueue msg) [@explicit_arity])
+  EnqueueCall (fun callbacks -> !callbacks.enqueue msg)
 
 let rec run : type msg. msg applicationCallbacks ref -> msg t -> unit =
  fun callbacks -> function
   | NoCmd ->
       ()
-  | ((Mapper (mapper, cmd)) [@implicit_arity]) ->
+  | Mapper (mapper, cmd) ->
       let subCallbacks = mapper callbacks in
       run subCallbacks cmd
-  | ((Batch cmds) [@explicit_arity]) ->
+  | Batch cmds ->
       List.fold_left (fun () cmd -> run callbacks cmd) () cmds
-  | ((EnqueueCall cb) [@explicit_arity]) ->
+  | EnqueueCall cb ->
       cb callbacks
 
 let map : type a b. (a -> b) -> a t -> b t =
  fun func cmd ->
   let mapper = Vdom.wrapCallbacks func in
-  (Mapper (mapper, cmd) [@implicit_arity])
+  Mapper (mapper, cmd)

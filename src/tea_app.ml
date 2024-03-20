@@ -46,7 +46,7 @@ let programStateWrapper initModel pump shutdown =
   let rec handler msg =
     match !pending with
     | None -> (
-        let () = pending := (Some [] [@explicit_arity]) in
+        let () = pending := Some [] in
         let newModel = pumperInterface.handleMsg !model msg in
         let () = model := newModel in
         match !pending with
@@ -54,13 +54,13 @@ let programStateWrapper initModel pump shutdown =
             failwith
               "INVALID message queue state, should never be None during \
                message processing!"
-        | ((Some []) [@explicit_arity]) ->
+        | Some [] ->
             pending := None
-        | ((Some msgs) [@explicit_arity]) ->
+        | Some msgs ->
             let () = pending := None in
             List.iter handler (List.rev msgs) )
-    | ((Some msgs) [@explicit_arity]) ->
-        pending := (Some (msg :: msgs) [@explicit_arity])
+    | Some msgs ->
+        pending := Some (msg :: msgs)
   in
   let render_events = ref [] in
   let finalizedCBs =
@@ -69,9 +69,9 @@ let programStateWrapper initModel pump shutdown =
             (function
             | Render ->
                 List.iter handler !render_events
-            | ((AddRenderMsg msg) [@explicit_arity]) ->
+            | AddRenderMsg msg ->
                 render_events := List.append !render_events [msg]
-            | ((RemoveRenderMsg msg) [@explicit_arity]) ->
+            | RemoveRenderMsg msg ->
                 render_events :=
                   List.filter (fun mg -> msg != mg) !render_events ) }
         : 'msg Vdom.applicationCallbacks )
@@ -127,7 +127,7 @@ let programLoop update view subscriptions initModel initCmd = function
                 oldSub := Tea_sub.run callbacks callbacks !oldSub Tea_sub.none
               in
               () ) }
-  | ((Some parentNode) [@explicit_arity]) ->
+  | Some parentNode ->
       fun callbacks ->
         let priorRenderedVdom = ref [] in
         let latestModel = ref initModel in
@@ -136,7 +136,7 @@ let programLoop update view subscriptions initModel initCmd = function
           match !nextFrameID with
           | None ->
               ()
-          | ((Some _id) [@explicit_arity]) ->
+          | Some _id ->
               let newVdom = [view !latestModel] in
               let justRenderedVdom =
                 Vdom.patchVNodesIntoElement callbacks parentNode
@@ -153,11 +153,11 @@ let programLoop update view subscriptions initModel initCmd = function
           | None ->
               let realtimeRendering = false in
               if realtimeRendering then
-                let () = nextFrameID := (Some (-1) [@explicit_arity]) in
+                let () = nextFrameID := Some (-1) in
                 doRender 16
               else
                 let id = Web.Window.requestAnimationFrame doRender in
-                let () = nextFrameID := (Some id [@explicit_arity]) in
+                let () = nextFrameID := Some id in
                 ()
         in
         let clearPnode () =
@@ -168,7 +168,7 @@ let programLoop update view subscriptions initModel initCmd = function
             match Webapi.Dom.Node.firstChild parentNode with
             | None ->
                 ()
-            | ((Some firstChild) [@explicit_arity]) ->
+            | Some firstChild ->
                 let _removedChild =
                   parentNode |> Webapi.Dom.Node.removeChild firstChild
                 in
@@ -184,7 +184,7 @@ let programLoop update view subscriptions initModel initCmd = function
           let () = clearPnode () in
           let () = Tea_cmd.run callbacks initCmd in
           let () = handleSubscriptionChange !latestModel in
-          let () = nextFrameID := (Some (-1) [@explicit_arity]) in
+          let () = nextFrameID := Some (-1) in
           let () = doRender 16 in
           ()
         in

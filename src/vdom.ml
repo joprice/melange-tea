@@ -33,15 +33,15 @@ type 'msg t =
   | Tagger of
       ('msg applicationCallbacks ref -> 'msg applicationCallbacks ref) * 'msg t
 
-let noNode = (((CommentNode "" [@explicit_arity]) : 'msg t) : 'msg t)
+let noNode = ((CommentNode "" : 'msg t) : 'msg t)
 
-let comment (s : string) : 'msg t = (CommentNode s [@explicit_arity])
+let comment (s : string) : 'msg t = CommentNode s
 
-let text (s : string) : 'msg t = (Text s [@explicit_arity])
+let text (s : string) : 'msg t = Text s
 
 let fullnode (namespace : string) (tagName : string) (key : string)
     (unique : string) (props : 'msg properties) (vdoms : 'msg t list) : 'msg t =
-  (Node (namespace, tagName, key, unique, props, vdoms) [@implicit_arity])
+  Node (namespace, tagName, key, unique, props, vdoms)
 
 let node ?(namespace : string = "") (tagName : string) ?(key : string = "")
     ?(unique : string = "") (props : 'msg properties) (vdoms : 'msg t list) :
@@ -49,33 +49,28 @@ let node ?(namespace : string = "") (tagName : string) ?(key : string = "")
   fullnode namespace tagName key unique props vdoms
 
 let lazyGen (key : string) (fn : unit -> 'msg t) : 'msg t =
-  (LazyGen (key, fn, ref noNode) [@implicit_arity])
+  LazyGen (key, fn, ref noNode)
 
 let noProp = ((NoProp : 'msg property) : 'msg property)
 
-let prop (key : string) (value : string) : 'msg property =
-  (RawProp (key, value) [@implicit_arity])
+let prop (key : string) (value : string) : 'msg property = RawProp (key, value)
 
 let onCB (name : string) (key : string) (cb : Dom.event -> 'msg option) :
     'msg property =
-  (Event (name, (EventHandlerCallback (key, cb) [@implicit_arity]), ref None)
-  [@implicit_arity] )
+  Event (name, EventHandlerCallback (key, cb), ref None)
 
 let onMsg (name : string) (msg : 'msg) : 'msg property =
-  (Event (name, (EventHandlerMsg msg [@explicit_arity]), ref None)
-  [@implicit_arity] )
+  Event (name, EventHandlerMsg msg, ref None)
 
 let attribute (namespace : string) (key : string) (value : string) :
     'msg property =
-  (Attribute (namespace, key, value) [@implicit_arity])
+  Attribute (namespace, key, value)
 
-let data (key : string) (value : string) : 'msg property =
-  (Data (key, value) [@implicit_arity])
+let data (key : string) (value : string) : 'msg property = Data (key, value)
 
-let style (key : string) (value : string) : 'msg property =
-  (Style [(key, value)] [@explicit_arity])
+let style (key : string) (value : string) : 'msg property = Style [(key, value)]
 
-let styles s : 'msg property = (Style s [@explicit_arity])
+let styles s : 'msg property = Style s
 
 let createElementNsOptional namespace tagName =
   let document = Webapi.Dom.document in
@@ -94,24 +89,23 @@ external setProp : Dom.element -> 'key -> 'value -> unit = "" [@@mel.set_index]
 
 let rec renderToHtmlString =
   ( ( function
-      | ((CommentNode s) [@explicit_arity]) ->
+      | CommentNode s ->
           "<!-- " ^ s ^ " -->"
-      | ((Text s) [@explicit_arity]) ->
+      | Text s ->
           s
-      | ((Node (namespace, tagName, _key, _unique, props, vdoms))
-      [@implicit_arity] ) ->
+      | Node (namespace, tagName, _key, _unique, props, vdoms) ->
           let renderProp = function
             | NoProp ->
                 ""
-            | ((RawProp (k, v)) [@implicit_arity]) ->
+            | RawProp (k, v) ->
                 String.concat "" [" "; k; "=\""; v; "\""]
-            | ((Attribute (_namespace, k, v)) [@implicit_arity]) ->
+            | Attribute (_namespace, k, v) ->
                 String.concat "" [" "; k; "=\""; v; "\""]
-            | ((Data (k, v)) [@implicit_arity]) ->
+            | Data (k, v) ->
                 String.concat "" [" data-"; k; "=\""; v; "\""]
-            | ((Event (_, _, _)) [@implicit_arity]) ->
+            | Event (_, _, _) ->
                 ""
-            | ((Style s) [@explicit_arity]) ->
+            | Style s ->
                 String.concat ""
                   [ " style=\""
                   ; String.concat ";"
@@ -131,10 +125,10 @@ let rec renderToHtmlString =
             ; "</"
             ; tagName
             ; ">" ]
-      | ((LazyGen (_key, gen, _cache)) [@implicit_arity]) ->
+      | LazyGen (_key, gen, _cache) ->
           let vdom = gen () in
           renderToHtmlString vdom
-      | ((Tagger (_tagger, vdom)) [@implicit_arity]) ->
+      | Tagger (_tagger, vdom) ->
           renderToHtmlString vdom
       : 'msg t -> string )
     : 'msg t -> string )
@@ -146,35 +140,27 @@ let emptyEventCB _ev : eventCallback option = None
 let eventHandler (callbacks : 'msg applicationCallbacks ref)
     (cb : (Dom.event -> 'msg option) ref) : eventCallback =
  fun [@mel] ev ->
-  match !cb ev with
-  | None ->
-      ()
-  | ((Some msg) [@explicit_arity]) ->
-      !callbacks.enqueue msg
+  match !cb ev with None -> () | Some msg -> !callbacks.enqueue msg
 
 let eventHandler_GetCB =
   ( ( function
-      | ((EventHandlerCallback (_, cb)) [@implicit_arity]) ->
+      | EventHandlerCallback (_, cb) ->
           cb
-      | ((EventHandlerMsg msg) [@explicit_arity]) ->
-          fun _ev -> (Some msg [@explicit_arity])
+      | EventHandlerMsg msg ->
+          fun _ev -> Some msg
       : 'msg eventHandler -> Dom.event -> 'msg option )
     : 'msg eventHandler -> Dom.event -> 'msg option )
 
 let compareEventHandlerTypes (left : 'msg eventHandler) :
     'msg eventHandler -> bool = function
-  | ((EventHandlerCallback (cb, _)) [@implicit_arity]) -> (
+  | EventHandlerCallback (cb, _) -> (
     match left with
-    | ((EventHandlerCallback (lcb, _)) [@implicit_arity]) when cb = lcb ->
+    | EventHandlerCallback (lcb, _) when cb = lcb ->
         true
     | _ ->
         false )
-  | ((EventHandlerMsg msg) [@explicit_arity]) -> (
-    match left with
-    | ((EventHandlerMsg lmsg) [@explicit_arity]) when msg = lmsg ->
-        true
-    | _ ->
-        false )
+  | EventHandlerMsg msg -> (
+    match left with EventHandlerMsg lmsg when msg = lmsg -> true | _ -> false )
 
 let eventHandler_Register (callbacks : 'msg applicationCallbacks ref)
     (elem : Dom.eventTarget) (name : string) (handlerType : 'msg eventHandler) :
@@ -185,13 +171,13 @@ let eventHandler_Register (callbacks : 'msg applicationCallbacks ref)
     Webapi.Dom.Element.addEventListener name handler
       (Webapi.Dom.EventTarget.unsafeAsElement elem)
   in
-  (Some {handler; cb} [@explicit_arity])
+  Some {handler; cb}
 
 let eventHandler_Unregister (elem : Dom.eventTarget) (name : string) :
     'msg eventCache option -> 'msg eventCache option = function
   | None ->
       None
-  | ((Some cache) [@explicit_arity]) ->
+  | Some cache ->
       let () =
         Webapi.Dom.Element.removeEventListener name cache.handler
           (Webapi.Dom.EventTarget.unsafeAsElement elem)
@@ -206,7 +192,7 @@ let eventHandler_Mutate (callbacks : 'msg applicationCallbacks ref)
   match !oldCache with
   | None ->
       newCache := eventHandler_Register callbacks elem newName newHandlerType
-  | ((Some oldcache) [@explicit_arity]) ->
+  | Some oldcache ->
       if oldName = newName then
         let () = newCache := !oldCache in
         if compareEventHandlerTypes oldHandlerType newHandlerType then ()
@@ -227,19 +213,19 @@ let patchVNodesOnElems_PropertiesApply_Add
     : 'msg property -> unit = function
   | NoProp ->
       ()
-  | ((RawProp (k, v)) [@implicit_arity]) ->
+  | RawProp (k, v) ->
       setProp elem k v
-  | ((Attribute (namespace, k, v)) [@implicit_arity]) ->
+  | Attribute (namespace, k, v) ->
       Webapi.Dom.Element.setAttributeNS namespace k v elem
-  | ((Data (k, v)) [@implicit_arity]) ->
+  | Data (k, v) ->
       Js.log ("TODO:  Add Data Unhandled", k, v) ;
       failwith "TODO:  Add Data Unhandled"
-  | ((Event (name, handlerType, cache)) [@implicit_arity]) ->
+  | Event (name, handlerType, cache) ->
       cache :=
         eventHandler_Register callbacks
           (Webapi.Dom.Element.asEventTarget elem)
           name handlerType
-  | ((Style s) [@explicit_arity]) -> (
+  | Style s -> (
     match Webapi.Dom.HtmlElement.ofElement elem with
     | Some elem ->
         let elemStyle = Webapi.Dom.HtmlElement.style elem in
@@ -256,19 +242,19 @@ let patchVNodesOnElems_PropertiesApply_Remove
     (_idx : int) : 'msg property -> unit = function
   | NoProp ->
       ()
-  | ((RawProp (k, _v)) [@implicit_arity]) ->
+  | RawProp (k, _v) ->
       setProp elem k Js.Undefined.empty
-  | ((Attribute (namespace, k, _v)) [@implicit_arity]) ->
+  | Attribute (namespace, k, _v) ->
       Webapi.Dom.Element.removeAttributeNS namespace k elem
-  | ((Data (k, v)) [@implicit_arity]) ->
+  | Data (k, v) ->
       Js.log ("TODO:  Remove Data Unhandled", k, v) ;
       failwith "TODO:  Remove Data Unhandled"
-  | ((Event (name, _, cache)) [@implicit_arity]) ->
+  | Event (name, _, cache) ->
       cache :=
         eventHandler_Unregister
           (Webapi.Dom.Element.asEventTarget elem)
           name !cache
-  | ((Style s) [@explicit_arity]) -> (
+  | Style s -> (
     match Webapi.Dom.HtmlElement.ofElement elem with
     | Some elem ->
         let elemStyle = Webapi.Dom.HtmlElement.style elem in
@@ -295,19 +281,18 @@ let patchVNodesOnElems_PropertiesApply_Mutate
   | NoProp as _newProp ->
       failwith
         "This should never be called as all entries through NoProp are gated."
-  | ((RawProp (k, v)) [@implicit_arity]) as _newProp ->
+  | RawProp (k, v) as _newProp ->
       setProp elem k v
-  | ((Attribute (namespace, k, v)) [@implicit_arity]) as _newProp ->
+  | Attribute (namespace, k, v) as _newProp ->
       Webapi.Dom.Element.setAttributeNS namespace k v elem
-  | ((Data (k, v)) [@implicit_arity]) as _newProp ->
+  | Data (k, v) as _newProp ->
       Js.log ("TODO:  Mutate Data Unhandled", k, v) ;
       failwith "TODO:  Mutate Data Unhandled"
-  | ((Event (_newName, _newHandlerType, _newCache)) [@implicit_arity] ) as
-    _newProp ->
+  | Event (_newName, _newHandlerType, _newCache) as _newProp ->
       failwith "This will never be called because it is gated"
-  | ((Style s) [@explicit_arity]) as _newProp -> (
+  | Style s as _newProp -> (
     match[@ocaml.warning "-4"] oldProp with
-    | ((Style oldS) [@explicit_arity]) -> (
+    | Style oldS -> (
       match Webapi.Dom.HtmlElement.ofElement elem with
       | Some elem ->
           List.fold_left2
@@ -344,8 +329,8 @@ let rec patchVNodesOnElems_PropertiesApply
   | NoProp :: oldRest, NoProp :: newRest ->
       patchVNodesOnElems_PropertiesApply callbacks elem (idx + 1) oldRest
         newRest
-  | ( (((RawProp (oldK, oldV)) [@implicit_arity]) as oldProp) :: oldRest
-    , (((RawProp (newK, newV)) [@implicit_arity]) as newProp) :: newRest ) ->
+  | ( (RawProp (oldK, oldV) as oldProp) :: oldRest
+    , (RawProp (newK, newV) as newProp) :: newRest ) ->
       let () =
         if oldK = newK && oldV = newV then ()
         else
@@ -354,9 +339,8 @@ let rec patchVNodesOnElems_PropertiesApply
       in
       patchVNodesOnElems_PropertiesApply callbacks elem (idx + 1) oldRest
         newRest
-  | ( (((Attribute (oldNS, oldK, oldV)) [@implicit_arity]) as oldProp) :: oldRest
-    , (((Attribute (newNS, newK, newV)) [@implicit_arity]) as newProp)
-      :: newRest ) ->
+  | ( (Attribute (oldNS, oldK, oldV) as oldProp) :: oldRest
+    , (Attribute (newNS, newK, newV) as newProp) :: newRest ) ->
       let () =
         if oldNS = newNS && oldK = newK && oldV = newV then ()
         else
@@ -365,8 +349,8 @@ let rec patchVNodesOnElems_PropertiesApply
       in
       patchVNodesOnElems_PropertiesApply callbacks elem (idx + 1) oldRest
         newRest
-  | ( (((Data (oldK, oldV)) [@implicit_arity]) as oldProp) :: oldRest
-    , (((Data (newK, newV)) [@implicit_arity]) as newProp) :: newRest ) ->
+  | ( (Data (oldK, oldV) as oldProp) :: oldRest
+    , (Data (newK, newV) as newProp) :: newRest ) ->
       let () =
         if oldK = newK && oldV = newV then ()
         else
@@ -375,12 +359,8 @@ let rec patchVNodesOnElems_PropertiesApply
       in
       patchVNodesOnElems_PropertiesApply callbacks elem (idx + 1) oldRest
         newRest
-  | ( ( ((Event (oldName, oldHandlerType, oldCache)) [@implicit_arity] ) as
-        _oldProp )
-      :: oldRest
-    , ( ((Event (newName, newHandlerType, newCache)) [@implicit_arity] ) as
-        _newProp )
-      :: newRest ) ->
+  | ( (Event (oldName, oldHandlerType, oldCache) as _oldProp) :: oldRest
+    , (Event (newName, newHandlerType, newCache) as _newProp) :: newRest ) ->
       let () =
         eventHandler_Mutate callbacks
           (Webapi.Dom.Element.asEventTarget elem)
@@ -388,8 +368,7 @@ let rec patchVNodesOnElems_PropertiesApply
       in
       patchVNodesOnElems_PropertiesApply callbacks elem (idx + 1) oldRest
         newRest
-  | ( (((Style oldS) [@explicit_arity]) as oldProp) :: oldRest
-    , (((Style newS) [@explicit_arity]) as newProp) :: newRest ) ->
+  | (Style oldS as oldProp) :: oldRest, (Style newS as newProp) :: newRest ->
       let () =
         if oldS = newS then ()
         else
@@ -428,14 +407,9 @@ let rec patchVNodesOnElems_ReplaceNode
     (callbacks : 'msg applicationCallbacks ref) (elem : Dom.node)
     (elems : Dom.nodeList) (idx : int) : 'msg t -> unit =
   function[@ocaml.warning "-4"]
-  | ((Node
-        ( newNamespace
-        , newTagName
-        , _newKey
-        , _newUnique
-        , newProperties
-        , newChildren ) )
-  [@implicit_arity] ) ->
+  | Node
+      (newNamespace, newTagName, _newKey, _newUnique, newProperties, newChildren)
+    ->
       let oldChild = nodeAt idx elems in
       let newChild = createElementNsOptional newNamespace newTagName in
       let true =
@@ -460,16 +434,14 @@ let rec patchVNodesOnElems_ReplaceNode
 
 and patchVNodesOnElems_CreateElement (callbacks : 'msg applicationCallbacks ref)
     : 'msg t -> Dom.node = function
-  | ((CommentNode s) [@explicit_arity]) ->
+  | CommentNode s ->
       Webapi.Dom.Document.createComment s Webapi.Dom.document
       |> Webapi.Dom.Comment.asNode
-  | ((Text text) [@explicit_arity]) ->
+  | Text text ->
       Webapi.Dom.Document.createTextNode text Webapi.Dom.document
       |> Webapi.Dom.Text.asNode
-  | ((Node
-        (newNamespace, newTagName, _newKey, _unique, newProperties, newChildren)
-       )
-  [@implicit_arity] ) ->
+  | Node (newNamespace, newTagName, _newKey, _unique, newProperties, newChildren)
+    ->
       let newChild = createElementNsOptional newNamespace newTagName in
       let true =
         patchVNodesOnElems_Properties callbacks newChild
@@ -483,31 +455,31 @@ and patchVNodesOnElems_CreateElement (callbacks : 'msg applicationCallbacks ref)
         patchVNodesOnElems callbacks newChildNode childChildren 0 [] newChildren
       in
       newChildNode
-  | ((LazyGen (_newKey, newGen, newCache)) [@implicit_arity]) ->
+  | LazyGen (_newKey, newGen, newCache) ->
       let vdom = newGen () in
       let () = newCache := vdom in
       patchVNodesOnElems_CreateElement callbacks vdom
-  | ((Tagger (tagger, vdom)) [@implicit_arity]) ->
+  | Tagger (tagger, vdom) ->
       patchVNodesOnElems_CreateElement (tagger callbacks) vdom
 
 and patchVNodesOnElems_MutateNode (callbacks : 'msg applicationCallbacks ref)
     (elem : Dom.node) (elems : Dom.nodeList) (idx : int) (oldNode : 'msg t)
     (newNode : 'msg t) : unit =
   match (oldNode, newNode) with
-  | ( ( ((Node
-            ( _oldNamespace
-            , oldTagName
-            , _oldKey
-            , oldUnique
-            , oldProperties
-            , oldChildren ) ) [@implicit_arity] ) as _oldNode )
-    , ( ((Node
-            ( _newNamespace
-            , newTagName
-            , _newKey
-            , newUnique
-            , newProperties
-            , newChildren ) ) [@implicit_arity] ) as newNode ) ) -> (
+  | ( ( Node
+          ( _oldNamespace
+          , oldTagName
+          , _oldKey
+          , oldUnique
+          , oldProperties
+          , oldChildren ) as _oldNode )
+    , ( Node
+          ( _newNamespace
+          , newTagName
+          , _newKey
+          , newUnique
+          , newProperties
+          , newChildren ) as newNode ) ) -> (
       if oldUnique <> newUnique || oldTagName <> newTagName then
         patchVNodesOnElems_ReplaceNode callbacks elem elems idx newNode
       else
@@ -543,10 +515,9 @@ and patchVNodesOnElems (callbacks : 'msg applicationCallbacks ref)
     (elem : Dom.node) (elems : Dom.nodeList) (idx : int)
     (oldVNodes : 'msg t list) (newVNodes : 'msg t list) : unit =
   match[@ocaml.warning "-4"] (oldVNodes, newVNodes) with
-  | ((Tagger (_oldTagger, oldVdom)) [@implicit_arity]) :: oldRest, _ ->
+  | Tagger (_oldTagger, oldVdom) :: oldRest, _ ->
       patchVNodesOnElems callbacks elem elems idx (oldVdom :: oldRest) newVNodes
-  | ( oldNode :: oldRest
-    , ((Tagger (newTagger, newVdom)) [@implicit_arity]) :: newRest ) ->
+  | oldNode :: oldRest, Tagger (newTagger, newVdom) :: newRest ->
       let () =
         patchVNodesOnElems (newTagger callbacks) elem elems idx [oldNode]
           [newVdom]
@@ -562,12 +533,9 @@ and patchVNodesOnElems (callbacks : 'msg applicationCallbacks ref)
       let child = nodeAt idx elems in
       let _removedChild = Webapi.Dom.Node.removeChild child elem in
       patchVNodesOnElems callbacks elem elems idx oldRest []
-  | ( ((CommentNode oldS) [@explicit_arity]) :: oldRest
-    , ((CommentNode newS) [@explicit_arity]) :: newRest )
-    when oldS = newS ->
+  | CommentNode oldS :: oldRest, CommentNode newS :: newRest when oldS = newS ->
       patchVNodesOnElems callbacks elem elems (idx + 1) oldRest newRest
-  | ( ((Text oldText) [@explicit_arity]) :: oldRest
-    , ((Text newText) [@explicit_arity]) :: newRest ) ->
+  | Text oldText :: oldRest, Text newText :: newRest ->
       let () =
         if oldText = newText then ()
         else
@@ -575,17 +543,15 @@ and patchVNodesOnElems (callbacks : 'msg applicationCallbacks ref)
           Webapi.Dom.Node.setNodeValue child (Js.Null.return newText)
       in
       patchVNodesOnElems callbacks elem elems (idx + 1) oldRest newRest
-  | ( ((LazyGen (oldKey, _oldGen, oldCache)) [@implicit_arity]) :: oldRest
-    , ((LazyGen (newKey, newGen, newCache)) [@implicit_arity]) :: newRest ) -> (
+  | ( LazyGen (oldKey, _oldGen, oldCache) :: oldRest
+    , LazyGen (newKey, newGen, newCache) :: newRest ) -> (
       if oldKey = newKey then
         let () = newCache := !oldCache in
         patchVNodesOnElems callbacks elem elems (idx + 1) oldRest newRest
       else
         match (oldRest, newRest) with
-        | ( ((LazyGen (olderKey, _olderGen, _olderCache)) [@implicit_arity])
-            :: olderRest
-          , ((LazyGen (newerKey, _newerGen, _newerCache)) [@implicit_arity])
-            :: newerRest )
+        | ( LazyGen (olderKey, _olderGen, _olderCache) :: olderRest
+          , LazyGen (newerKey, _newerGen, _newerCache) :: newerRest )
           when olderKey = newKey && oldKey = newerKey ->
             let firstChild = nodeAt idx elems in
             let secondChild = nodeAt (idx + 1) elems in
@@ -595,18 +561,14 @@ and patchVNodesOnElems (callbacks : 'msg applicationCallbacks ref)
             in
             patchVNodesOnElems callbacks elem elems (idx + 2) olderRest
               newerRest
-        | ( ((LazyGen (olderKey, _olderGen, olderCache)) [@implicit_arity])
-            :: olderRest
-          , _ )
+        | LazyGen (olderKey, _olderGen, olderCache) :: olderRest, _
           when olderKey = newKey ->
             let oldChild = nodeAt idx elems in
             let _removedChild = Webapi.Dom.Node.removeChild oldChild elem in
             let oldVdom = !olderCache in
             let () = newCache := oldVdom in
             patchVNodesOnElems callbacks elem elems (idx + 1) olderRest newRest
-        | ( _
-          , ((LazyGen (newerKey, _newerGen, _newerCache)) [@implicit_arity])
-            :: _newerRest )
+        | _, LazyGen (newerKey, _newerGen, _newerCache) :: _newerRest
           when newerKey = oldKey ->
             let oldChild = nodeAt idx elems in
             let newVdom = newGen () in
@@ -622,21 +584,21 @@ and patchVNodesOnElems (callbacks : 'msg applicationCallbacks ref)
             let () = newCache := newVdom in
             patchVNodesOnElems callbacks elem elems idx (oldVdom :: oldRest)
               (newVdom :: newRest) )
-  | ( ( ((Node
-            ( oldNamespace
-            , oldTagName
-            , oldKey
-            , _oldUnique
-            , _oldProperties
-            , _oldChildren ) ) [@implicit_arity] ) as oldNode )
+  | ( ( Node
+          ( oldNamespace
+          , oldTagName
+          , oldKey
+          , _oldUnique
+          , _oldProperties
+          , _oldChildren ) as oldNode )
       :: oldRest
-    , ( ((Node
-            ( newNamespace
-            , newTagName
-            , newKey
-            , _newUnique
-            , _newProperties
-            , _newChildren ) ) [@implicit_arity] ) as newNode )
+    , ( Node
+          ( newNamespace
+          , newTagName
+          , newKey
+          , _newUnique
+          , _newProperties
+          , _newChildren ) as newNode )
       :: newRest ) -> (
       if oldKey = newKey && oldKey <> "" then
         patchVNodesOnElems callbacks elem elems (idx + 1) oldRest newRest
@@ -647,21 +609,21 @@ and patchVNodesOnElems (callbacks : 'msg applicationCallbacks ref)
         patchVNodesOnElems callbacks elem elems (idx + 1) oldRest newRest
       else
         match (oldRest, newRest) with
-        | ( ((Node
-                ( olderNamespace
-                , olderTagName
-                , olderKey
-                , _olderUnique
-                , _olderProperties
-                , _olderChildren ) ) [@implicit_arity] )
+        | ( Node
+              ( olderNamespace
+              , olderTagName
+              , olderKey
+              , _olderUnique
+              , _olderProperties
+              , _olderChildren )
             :: olderRest
-          , ((Node
-                ( newerNamespace
-                , newerTagName
-                , newerKey
-                , _newerUnique
-                , _newerProperties
-                , _newerChildren ) ) [@implicit_arity] )
+          , Node
+              ( newerNamespace
+              , newerTagName
+              , newerKey
+              , _newerUnique
+              , _newerProperties
+              , _newerChildren )
             :: newerRest )
           when olderNamespace = newNamespace
                && olderTagName = newTagName && olderKey = newKey
@@ -675,13 +637,13 @@ and patchVNodesOnElems (callbacks : 'msg applicationCallbacks ref)
             in
             patchVNodesOnElems callbacks elem elems (idx + 2) olderRest
               newerRest
-        | ( ((Node
-                ( olderNamespace
-                , olderTagName
-                , olderKey
-                , _olderUnique
-                , _olderProperties
-                , _olderChildren ) ) [@implicit_arity] )
+        | ( Node
+              ( olderNamespace
+              , olderTagName
+              , olderKey
+              , _olderUnique
+              , _olderProperties
+              , _olderChildren )
             :: olderRest
           , _ )
           when olderNamespace = newNamespace
@@ -690,13 +652,13 @@ and patchVNodesOnElems (callbacks : 'msg applicationCallbacks ref)
             let _removedChild = Webapi.Dom.Node.removeChild oldChild elem in
             patchVNodesOnElems callbacks elem elems (idx + 1) olderRest newRest
         | ( _
-          , ((Node
-                ( newerNamespace
-                , newerTagName
-                , newerKey
-                , _newerUnique
-                , _newerProperties
-                , _newerChildren ) ) [@implicit_arity] )
+          , Node
+              ( newerNamespace
+              , newerTagName
+              , newerKey
+              , _newerUnique
+              , _newerProperties
+              , _newerChildren )
             :: _newerRest )
           when oldNamespace = newerNamespace
                && oldTagName = newerTagName && oldKey = newerKey ->
@@ -737,10 +699,10 @@ let wrapCallbacks_On : type a b. (a -> b) -> a systemMessage -> b systemMessage
  fun func -> function
   | Render ->
       Render
-  | ((AddRenderMsg msg) [@explicit_arity]) ->
-      AddRenderMsg (func msg) [@explicit_arity]
-  | ((RemoveRenderMsg msg) [@explicit_arity]) ->
-      RemoveRenderMsg (func msg) [@explicit_arity]
+  | AddRenderMsg msg ->
+      AddRenderMsg (func msg)
+  | RemoveRenderMsg msg ->
+      RemoveRenderMsg (func msg)
 
 let wrapCallbacks : type a b.
     (a -> b) -> b applicationCallbacks ref -> a applicationCallbacks ref =
@@ -758,6 +720,6 @@ let wrapCallbacks : type a b.
 let map =
   ( ( fun func vdom ->
         let tagger = wrapCallbacks func in
-        (Tagger (Obj.magic tagger, Obj.magic vdom) [@implicit_arity])
+        Tagger (Obj.magic tagger, Obj.magic vdom)
       : ('a -> 'b) -> 'a t -> 'b t )
     : ('a -> 'b) -> 'a t -> 'b t )

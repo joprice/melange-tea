@@ -6,7 +6,9 @@ let map = Tea_app.map
 (* Nodes *)
 
 let noNode = noNode
+
 let text str = text str
+
 let lazy1 key gen = lazyGen key gen
 
 let node ?(namespace = "") tagName ?(key = "") ?(unique = "") props nodes =
@@ -300,8 +302,11 @@ let menu ?(key = "") ?(unique = "") props nodes =
 (* Properties *)
 
 let noProp = Vdom.noProp
+
 let id str = prop "id" str
+
 let width str = prop "width" str
+
 let height str = prop "height" str
 
 (* `href` is actually an attribute, not a property, but need it here for Elm compat... *)
@@ -309,7 +314,9 @@ let href str = attribute "" "href" str
 
 (* `src` is actually an attribute, not a property, but need it here for Elm compat... *)
 let src str = attribute "" "src" str
+
 let title str = attribute "" "title" str
+
 let class' name = prop "className" name
 
 let classList classes =
@@ -319,22 +326,35 @@ let classList classes =
   |> String.concat " " |> class'
 
 let type' typ = prop "type" typ
+
 let style key value = style key value
+
 let styles s = styles s
+
 let placeholder str = prop "placeholder" str
+
 let autofocus b = if b then prop "autofocus" "autofocus" else noProp
+
 let value str = prop "value" str
+
 let name str = prop "name" str
+
 let checked b = if b then prop "checked" "checked" else noProp
+
 let for' str = prop "htmlFor" str
+
 let hidden b = if b then prop "hidden" "hidden" else noProp
+
 let target t = prop "target" t
+
 let action a = prop "action" a
+
 let method' m = prop "method" m
 
 (* Events *)
 
 let onCB eventName key cb = onCB eventName key cb
+
 let onMsg eventName msg = onMsg eventName msg
 
 let onInputOpt ?(key = "") msg =
@@ -343,8 +363,10 @@ let onInputOpt ?(key = "") msg =
         Webapi.Dom.Event.target ev |> Webapi.Dom.EventTarget.unsafeAsElement
       in
       match Webapi.Dom.HtmlElement.ofElement element with
-      | None -> None
-      | Some inputElement -> msg (Webapi.Dom.HtmlElement.value inputElement))
+      | None ->
+          None
+      | Some inputElement ->
+          msg (Webapi.Dom.HtmlElement.value inputElement) )
 
 let onInput ?(key = "") msg = onInputOpt ~key (fun ev -> Some (msg ev))
 
@@ -354,13 +376,19 @@ let onChangeOpt ?(key = "") msg =
         Webapi.Dom.Event.target ev |> Webapi.Dom.EventTarget.unsafeAsElement
       in
       match Webapi.Dom.HtmlElement.ofElement element with
-      | None -> None
-      | Some value -> msg (Webapi.Dom.HtmlElement.value value))
+      | None ->
+          None
+      | Some value ->
+          msg (Webapi.Dom.HtmlElement.value value) )
 
 let onChange ?(key = "") msg = onChangeOpt ~key (fun ev -> Some (msg ev))
+
 let onClick msg = onMsg "click" msg
+
 let onDoubleClick msg = onMsg "dblclick" msg
+
 let onBlur msg = onMsg "blur" msg
+
 let onFocus msg = onMsg "focus" msg
 
 let onCheckOpt ?(key = "") msg =
@@ -369,20 +397,28 @@ let onCheckOpt ?(key = "") msg =
         Webapi.Dom.Event.target ev |> Webapi.Dom.EventTarget.unsafeAsElement
       in
       match Webapi.Dom.HtmlElement.ofElement element with
-      | None -> None
-      | Some inputElement -> msg (Webapi.Dom.HtmlElement.checked inputElement))
+      | None ->
+          None
+      | Some inputElement ->
+          msg (Webapi.Dom.HtmlElement.checked inputElement) )
 
 let onCheck ?(key = "") msg = onCheckOpt ~key (fun ev -> Some (msg ev))
+
 let onMouseDown msg = onMsg "mousedown" msg
+
 let onMouseUp msg = onMsg "mouseup" msg
+
 let onMouseEnter msg = onMsg "mouseenter" msg
+
 let onMouseLeave msg = onMsg "mouseleave" msg
+
 let onMouseOver msg = onMsg "mouseover" msg
+
 let onMouseOut msg = onMsg "mouseout" msg
 
-type options = { stopPropagation : bool; preventDefault : bool }
+type options = {stopPropagation: bool; preventDefault: bool}
 
-let defaultOptions = { stopPropagation = false; preventDefault = false }
+let defaultOptions = {stopPropagation= false; preventDefault= false}
 
 (* let onWithOptions = (~key: string, eventName, options: options, decoder) => *)
 (*   onCB(~key, eventName, event => { *)
@@ -406,28 +442,34 @@ let defaultOptions = { stopPropagation = false; preventDefault = false }
 let onWithOptions ~(key : string) eventName (options : options) decoder =
   onCB eventName key (fun event ->
       if options.stopPropagation then
-        Webapi.Dom.Event.stopPropagation event |> ignore;
+        Webapi.Dom.Event.stopPropagation event |> ignore ;
       if options.preventDefault then
-        Webapi.Dom.Event.preventDefault event |> ignore;
-      event |> Tea_json.Decoder.decodeEvent decoder |> Result.to_option)
+        Webapi.Dom.Event.preventDefault event |> ignore ;
+      event |> Tea_json.Decoder.decodeEvent decoder |> Result.to_option )
 
 let on ~(key : string) eventName decoder =
   onWithOptions ~key eventName defaultOptions decoder
 
 let targetValue =
-  Tea_json.Decoder.at [ "target"; "value" ] Tea_json.Decoder.string
+  Tea_json.Decoder.at ["target"; "value"] Tea_json.Decoder.string
 
 let targetChecked =
-  Tea_json.Decoder.at [ "target"; "checked" ] Tea_json.Decoder.bool
+  Tea_json.Decoder.at ["target"; "checked"] Tea_json.Decoder.bool
 
 let keyCode = Tea_json.Decoder.field "keyCode" Tea_json.Decoder.int
 
 module Attributes = struct
   let max value = attribute "" "max" value
+
   let min value = attribute "" "min" value
+
   let step value = attribute "" "step" value
+
   let disabled b = if b then attribute "" "disabled" "true" else noProp
+
   let selected b = if b then attribute "" "selected" "true" else noProp
+
   let acceptCharset c = attribute "" "accept-charset" c
+
   let rel value = attribute "" "rel" value
 end

@@ -28,18 +28,25 @@ let delay msTime msg =
         Web.Window.setTimeout
           (fun () ->
             let open Vdom in
-            !callbacks.enqueue msg)
+            !callbacks.enqueue msg )
           msTime
       in
-      ())
+      () )
 
 (* Generic Helpers *)
 
 let millisecond = 1.0
+
 let second = 1000.0 *. millisecond
+
 let minute = 60.0 *. second
+
 let hour = 60.0 *. minute
+
 let inMilliseconds t = t
+
 let inSeconds t = t /. second
+
 let inMinutes t = t /. minute
+
 let inHours t = t /. hour

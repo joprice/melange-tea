@@ -14,6 +14,7 @@ let node ?(namespace = "") tagName ?(key = "") ?(unique = "") props nodes =
   fullnode namespace tagName key unique props nodes
 
 let noNode = noNode
+
 let lazy1 key gen = lazyGen key gen
 
 (** {1 Tags} *)
@@ -352,10 +353,10 @@ let meta ?(key = "") ?(unique = "") props =
   fullnode "" "meta" key unique props []
 
 let style ?(key = "") ?(unique = "") props content =
-  fullnode "" "style" key unique props [ text content ]
+  fullnode "" "style" key unique props [text content]
 
 let title ?(key = "") ?(unique = "") props content =
-  fullnode "" "title" key unique props [ text content ]
+  fullnode "" "title" key unique props [text content]
 
 let link ?(key = "") ?(unique = "") props =
   fullnode "" "link" key unique props []
@@ -365,7 +366,9 @@ module Attributes = struct
   (** {1 Primitives} *)
 
   let noProp = Vdom.noProp
+
   let style key value = Vdom.style key value
+
   let styles s = Vdom.styles s
 
   (** {1 Super common attributes} *)
@@ -379,119 +382,183 @@ module Attributes = struct
     |> String.concat " " |> class'
 
   let id str = prop "id" str
+
   let title str = attribute "" "title" str
+
   let hidden b = if b then prop "hidden" "hidden" else noProp
 
   (** {1 Inputs} *)
 
   let type' typ = prop "type" typ
+
   let value str = prop "value" str
+
   let defaultValue str = prop "defaultValue" str
+
   let checked b = if b then prop "checked" "checked" else noProp
+
   let placeholder str = prop "placeholder" str
+
   let selected b = if b then attribute "" "selected" "true" else noProp
 
   (** {1 Input helpers} *)
 
   let accept c = attribute "" "accept" c
+
   let acceptCharset c = attribute "" "accept-charset" c
+
   let action a = prop "action" a
+
   let autocomplete b = prop "autocomplete" (if b then "on" else "off")
+
   let autofocus b = if b then prop "autofocus" "autofocus" else noProp
+
   let disabled b = if b then attribute "" "disabled" "true" else noProp
+
   let enctype encoding = attribute "" "enctype" encoding
+
   let formaction url = attribute "" "formaction" url
+
   let list value = attribute "" "list" value
+
   let minlength n = attribute "" "minlength" (string_of_int n)
+
   let maxlength n = attribute "" "maxlength" (string_of_int n)
+
   let method' m = prop "method" m
+
   let multiple b = if b then prop "multiple" "multiple" else noProp
+
   let name str = prop "name" str
+
   let novalidate b = if b then prop "novalidate" "novalidate" else noProp
+
   let pattern p = prop "pattern" p
+
   let readonly b = if b then attribute "" "readonly" "readonly" else noProp
+
   let required b = if b then attribute "" "required" "required" else noProp
+
   let size n = attribute "" "size" (string_of_int n)
+
   let for' str = prop "htmlFor" str
+
   let form value = attribute "" "form" value
 
   (** {1 Input ranges} *)
 
   let max value = attribute "" "max" value
+
   let min value = attribute "" "min" value
+
   let step value = attribute "" "step" value
 
   (** {1 Textarea} *)
 
   let cols n = attribute "" "cols" (string_of_int n)
+
   let rows n = attribute "" "rows" (string_of_int n)
+
   let wrap value = prop "wrap" value
 
   (** {1 Links and areas} *)
 
   (* `href` is actually an attribute, not a property, but need it here for Elm compat... *)
   let href str = attribute "" "href" str
+
   let target t = prop "target" t
+
   let download b = if b then prop "download" "" else noProp
+
   let downloadAs name = prop "download" name
+
   let hreflang code = prop "hreflang" code
+
   let media value = attribute "" "media" value
+
   let ping url = prop "ping" url
+
   let rel value = attribute "" "rel" value
 
   (** {1 Maps} *)
 
   let ismap b = if b then prop "ismap" "ismap" else noProp
+
   let usemap name = prop "usemap" name
+
   let shape value = prop "shape" value
+
   let coords value = prop "coords" value
 
   (** {1 Embedded content} *)
 
   (* `src` is actually an attribute, not a property, but need it here for Elm compat... *)
   let src str = attribute "" "src" str
+
   let height n = attribute "" "height" (string_of_int n)
+
   let width n = attribute "" "width" (string_of_int n)
+
   let alt value = prop "alt" value
 
   (** {1 Audio and Video} *)
 
   let autoplay b = if b then prop "autoplay" "autoplay" else noProp
+
   let controls b = if b then prop "controls" "controls" else noProp
+
   let loop b = if b then prop "loop" "loop" else noProp
+
   let preload value = prop "preload" value
+
   let poster url = prop "poster" url
+
   let default b = if b then prop "default" "default" else noProp
+
   let kind value = prop "kind" value
+
   let srclang code = prop "srclang" code
 
   (** {1 IFrames} *)
 
   let sandbox value = prop "sandbox" value
+
   let seamless b = if b then prop "seamless" "seamless" else noProp
+
   let srcdoc value = prop "srcdoc" value
 
   (** {1 Ordered lists} *)
 
   let reversed b = if b then prop "reversed" "reversed" else noProp
+
   let start n = prop "start" (string_of_int n)
 
   (** {1 Tables} *)
 
   let colspan n = attribute "" "colspan" (string_of_int n)
+
   let rowspan n = attribute "" "rowspan" (string_of_int n)
+
   let headers value = prop "headers" value
+
   let scope value = prop "scope" value
+
   let align value = prop "align" value
 
   (** {1 Header stuff} *)
 
   let async b = if b then prop "async" "async" else noProp
+
   let charset value = attribute "" "charset" value
+
   let content value = attribute "" "content" value
+
   let defer b = if b then prop "defer" "defer" else noProp
+
   let httpEquiv value = prop "http-equiv" value
+
   let language value = prop "language" value
+
   let scoped value = prop "scoped" value
 
   (** {1 Less common global attributes} *)
@@ -502,24 +569,35 @@ module Attributes = struct
     if b then prop "contenteditable" "contenteditable" else noProp
 
   let contextmenu id = attribute "" "contextmenu" id
+
   let dir value = prop "dir" value
+
   let draggable value = attribute "" "draggable" value
+
   let dropzone value = prop "dropzone" value
+
   let itemprop value = attribute "" "itemprop" value
+
   let lang code = prop "lang" code
+
   let spellcheck b = if b then prop "spellcheck" "spellcheck" else noProp
+
   let tabindex n = attribute "" "tabindex" (string_of_int n)
 
   (** {1 Key generation} *)
 
   let challenge value = attribute "" "challenge" value
+
   let keytype value = prop "keytype" value
 
   (** {1 Miscellaneous} *)
 
   let cite url = prop "cite" url
+
   let datetime value = attribute "" "datetime" value
+
   let pubdate value = attribute "" "pubdate" value
+
   let manifest value = attribute "" "manifest" value
 end
 
@@ -527,28 +605,42 @@ module Events = struct
   (** {1 Primitives} *)
 
   let onCB eventName key cb = onCB eventName key cb
+
   let onMsg eventName msg = onMsg eventName msg
+
   let on = Tea_html.on
+
   let onWithOptions = Tea_html.onWithOptions
+
   let defaultOptions = Tea_html.defaultOptions
+
   let targetValue = Tea_html.targetValue
+
   let targetChecked = Tea_html.targetChecked
+
   let keyCode = Tea_html.keyCode
 
   let preventDefaultOn ?(key = "") eventName decoder =
     onWithOptions ~key eventName
-      { defaultOptions with preventDefault = true }
+      {defaultOptions with preventDefault= true}
       decoder
 
   (** {1 Mouse helpers} *)
 
   let onClick msg = onMsg "click" msg
+
   let onDoubleClick msg = onMsg "dblclick" msg
+
   let onMouseDown msg = onMsg "mousedown" msg
+
   let onMouseUp msg = onMsg "mouseup" msg
+
   let onMouseEnter msg = onMsg "mouseenter" msg
+
   let onMouseLeave msg = onMsg "mouseleave" msg
+
   let onMouseOver msg = onMsg "mouseover" msg
+
   let onMouseOut msg = onMsg "mouseout" msg
 
   (** {1 Form helpers} *)
@@ -559,8 +651,10 @@ module Events = struct
           Webapi.Dom.Event.target ev |> Webapi.Dom.EventTarget.unsafeAsElement
         in
         match Webapi.Dom.HtmlElement.ofElement element with
-        | None -> None
-        | Some inputElement -> msg (Webapi.Dom.HtmlElement.value inputElement))
+        | None ->
+            None
+        | Some inputElement ->
+            msg (Webapi.Dom.HtmlElement.value inputElement) )
 
   let onInput ?(key = "") msg = onInputOpt ~key (fun ev -> Some (msg ev))
 
@@ -570,8 +664,10 @@ module Events = struct
           Webapi.Dom.Event.target ev |> Webapi.Dom.EventTarget.unsafeAsElement
         in
         match Webapi.Dom.HtmlElement.ofElement element with
-        | None -> None
-        | Some inputElement -> msg (Webapi.Dom.HtmlElement.checked inputElement))
+        | None ->
+            None
+        | Some inputElement ->
+            msg (Webapi.Dom.HtmlElement.checked inputElement) )
 
   let onCheck ?(key = "") msg = onCheckOpt ~key (fun ev -> Some (msg ev))
 
@@ -581,14 +677,18 @@ module Events = struct
           Webapi.Dom.Event.target ev |> Webapi.Dom.EventTarget.unsafeAsElement
         in
         match Webapi.Dom.HtmlElement.ofElement element with
-        | None -> None
-        | Some value -> msg (Webapi.Dom.HtmlElement.value value))
+        | None ->
+            None
+        | Some value ->
+            msg (Webapi.Dom.HtmlElement.value value) )
 
   let onChange ?(key = "") msg = onChangeOpt ~key (fun ev -> Some (msg ev))
+
   let onSubmit msg = preventDefaultOn "submit" (Tea_json.Decoder.succeed msg)
 
   (** {1 Focus helpers} *)
 
   let onBlur msg = onMsg "blur" msg
+
   let onFocus msg = onMsg "focus" msg
 end

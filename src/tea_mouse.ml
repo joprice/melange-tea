@@ -1,8 +1,8 @@
-type position = { x : int; y : int }
+type position = {x: int; y: int}
 
 let position =
   let open Tea_json.Decoder in
-  map2 (fun x y -> { x; y }) (field "pageX" int) (field "pageY" int)
+  map2 (fun x y -> {x; y}) (field "pageX" int) (field "pageY" int)
 
 let registerGlobal name key tagger =
   let open Vdom in
@@ -12,8 +12,10 @@ let registerGlobal name key tagger =
       let open Tea_json.Decoder in
       let open Tea_result in
       match decodeEvent position ev with
-      | Error _ -> None
-      | Ok pos -> Some (tagger pos)
+      | Error _ ->
+          None
+      | Ok pos ->
+          Some (tagger pos)
     in
     let handler = EventHandlerCallback (key, fn) in
     let elem = Webapi.Dom.Document.asEventTarget Webapi.Dom.document in
@@ -25,6 +27,9 @@ let registerGlobal name key tagger =
   Tea_sub.registration key enableCall
 
 let clicks ?(key = "") tagger = registerGlobal "click" key tagger
+
 let moves ?(key = "") tagger = registerGlobal "mousemove" key tagger
+
 let downs ?(key = "") tagger = registerGlobal "mousedown" key tagger
+
 let ups ?(key = "") tagger = registerGlobal "mouseup" key tagger

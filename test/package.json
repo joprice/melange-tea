@@ -7,7 +7,7 @@
     "dev": "dune build && concurrently 'npm:vite-dev' 'npm:dune-watch'",
     "dune-watch": "dune build -w",
     "serve": "dune build && vite preview",
-    "vite-dev": "vite _build/default"
+    "vite-dev": "cd ../ && vite test"
   },
   "dependencies": {
   },

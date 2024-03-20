@@ -291,7 +291,7 @@ let debug (string_of_msg : 'msg -> string)
       | Running -> (0, List.hd model.history |> snd, false)
       | Paused index -> (index, List.nth model.history index |> snd, true)
     in
-    let history_count = List.length model.history in
+    let history_count = List.length model.history |> string_of_int in
     div []
       [
         view selected_model |> Tea_app.map client_msg;

@@ -1,0 +1,7 @@
+(melange.emit
+ (target client)
+ (alias default)
+ (preprocess
+  (pps melange.ppx))
+ (module_systems es6)
+ (libraries melange-tea))

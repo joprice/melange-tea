@@ -1,4 +1,4 @@
-/node_modules
+node_modules/
 /.merlin
 /lib/bs
 /lib/js/test

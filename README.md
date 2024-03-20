@@ -68,7 +68,7 @@ type msg =
   | Decrement  (* This will be our message to decrement the counter *)
   | Reset      (* This will be our message to reset the counter to 0 *)
   | Set of int (* This will be our message to set the counter to a specific value *)
-  [@@mel.deriving {accessors}] (* This is a nice quality-of-life addon from Bucklescript, it will generate function names for each constructor name, optional, but nice to cut down on code, this is unused in this example but good to have regardless *)
+  [@@deriving accessors] (* This is a nice quality-of-life addon from Bucklescript, it will generate function names for each constructor name, optional, but nice to cut down on code, this is unused in this example but good to have regardless *)
 
 (* This is optional for such a simple example, but it is good to have an `init` function to define your initial model default values, the model for Counter is just an integer *)
 let init () = 4
@@ -110,7 +110,7 @@ let view model =
   The Program returned here has a set of callbacks that can easily be called from
   Bucklescript or from javascript for running this main attached to an element,
   or even to pass a message into the event loop.  You can even expose the
-  constructors to the messages to javascript via the above [@@mel.deriving {accessors}]
+  constructors to the messages to javascript via the above [@@deriving accessors]
   attribute on the `msg` type or manually, that way even javascript can use it safely. *)
 let main =
   beginnerProgram { (* The beginnerProgram just takes a set model state and the update and view functions *)
@@ -158,4 +158,3 @@ This one is not so much a starter kit as it is a porting kit, it can actually ta
 See its announcement article at:  https://medium.com/@paulbiggar/philip2-an-elm-to-reasonml-compiler-a210aaa6cd04
 
 And its porting guide at:  https://github.com/darklang/philip2#how-to-port-your-project
-

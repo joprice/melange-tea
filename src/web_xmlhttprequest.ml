@@ -152,6 +152,9 @@ module Internal = struct
 
   external onloadend : t -> event_loadend event = "onloadend" [@@mel.get]
 
+  external open_ : string -> string -> bool -> string -> string -> unit = "open"
+  [@@mel.send.pipe: t]
+
   (* external set_onloadend : event_loadend event -> unit = "onloadend" *)
   (* [@@mel.send.pipe: t] *)
   (*  *)
@@ -201,7 +204,7 @@ let getResponseHeader key x = Js.Null.toOption (x##getResponse key)
 
 let open_ (method' : string) (url : string) ?(async = true) ?(user = "")
     ?(password = "") x =
-  x##_open method' url async user password
+  x |> Internal.open_ method' url async user password
 
 let overrideMimeType (mimetype : string) (x : t) : unit =
   x |> Internal.overrideMimeType mimetype

@@ -6,7 +6,7 @@ module Window = Web_window
 module Location = Web_location
 module Json = Web_json
 module XMLHttpRequest = Web_xmlhttprequest
-module FormData = Web_formdata
+module FormData = Webapi.FormData
 
 (* let polyfills () = *)
 (*   let () = Node.remove_polyfill () in *)

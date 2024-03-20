@@ -89,13 +89,13 @@ module Internal = struct
   external setRequestHeader : string -> string -> unit = "setRequestHeader"
   [@@mel.send.pipe: t]
 
-  type onreadstatechange = event_readystatechange -> unit
+  type onreadystatechange = event_readystatechange -> unit
 
-  external set_onreadystatechange : onreadstatechange -> unit
+  external set_onreadystatechange : onreadystatechange -> unit
     = "onreadystatechange"
   [@@mel.send.pipe: t]
 
-  external onreadystatechange : t -> onreadstatechange = "onreadystatechange"
+  external onreadystatechange : t -> onreadystatechange = "onreadystatechange"
   [@@mel.get]
 
   external readyState : t -> int = "readyState" [@@mel.get]
@@ -108,7 +108,58 @@ module Internal = struct
   external responseText : t -> string = "responseText" [@@mel.get]
   external responseURL : t -> string = "responseURL" [@@mel.get]
   external responseXML : t -> Web_document.t Js.null = "responseXML" [@@mel.get]
+  external status : t -> int = "status" [@@mel.get]
+  external statusText : t -> string = "statusText" [@@mel.get]
+  external set_timeout : float -> unit = "timeout" [@@mel.send.pipe: t]
+  external timeout : t -> float = "timeout" [@@mel.get]
 
+  external set_withCredentials : bool -> unit = "withCredentials"
+  [@@mel.send.pipe: t]
+
+  external withCredentials : t -> bool = "withCredentials" [@@mel.get]
+
+  type 'a event = 'a -> unit
+
+  external set_onabort : event_abort event -> unit = "onabort"
+  [@@mel.send.pipe: t]
+
+  external onabort : t -> event_abort event = "onabort" [@@mel.get]
+
+  external set_onerror : event_error event -> unit = "onerror"
+  [@@mel.send.pipe: t]
+
+  external onerror : t -> event_error event = "onerror" [@@mel.get]
+  external set_onload : event_load event -> unit = "onload" [@@mel.send.pipe: t]
+  external onload : t -> event_load event = "onload" [@@mel.get]
+
+  external set_onloadstart : event_loadstart event -> unit = "onloadstart"
+  [@@mel.send.pipe: t]
+
+  external onloadstart : t -> event_loadstart event = "onloadstart" [@@mel.get]
+
+  external set_onprogress : event_progress event -> unit = "onprogress"
+  [@@mel.send.pipe: t]
+
+  external onprogress : t -> event_progress event = "onprogress" [@@mel.get]
+
+  external set_ontimeout : event_timeout event -> unit = "ontimeout"
+  [@@mel.send.pipe: t]
+
+  external ontimeout : t -> event_timeout event = "ontimeout" [@@mel.get]
+
+  external set_onloadend : event_loadend event -> unit = "onloadend"
+  [@@mel.send.pipe: t]
+
+  external onloadend : t -> event_loadend event = "onloadend" [@@mel.get]
+
+  (* external set_onloadend : event_loadend event -> unit = "onloadend" *)
+  (* [@@mel.send.pipe: t] *)
+  (*  *)
+  (* external onloadend : t -> event_loadend event = "onloadend" [@@mel.get] *)
+
+  (*   method onloadstart : event_loadstart -> unit [@@mel.get] [@@mel.set] *)
+  (*   method onprogress : event_loadstart -> unit [@@mel.get] [@@mel.set] *)
+  (*   method ontimeout : event_timeout -> unit [@@mel.get] [@@mel.set] *)
   (*   method onreadystatechange : event_readystatechange -> unit *)
 end
 
@@ -281,21 +332,22 @@ let set_onload (cb : event_load -> unit) (x : t) : unit =
 let get_onload (x : t) : event_load -> unit = x |> Internal.onload
 
 let set_onloadstart (cb : event_loadstart -> unit) (x : t) : unit =
-  x |> Internal.onloadstart cb
+  x |> Internal.set_onloadstart cb
 
-let get_onloadstart (x : t) : event_loadstart -> unit = x##onloadstart
+let get_onloadstart (x : t) : event_loadstart -> unit =
+  x |> Internal.onloadstart
 
 let set_onprogress (cb : event_loadstart -> unit) (x : t) : unit =
   x |> Internal.set_onprogress cb
 
-let get_onprogress (x : t) : event_loadstart -> unit = x##onprogress
+let get_onprogress (x : t) : event_loadstart -> unit = x |> Internal.onprogress
 
 let set_ontimeout (cb : event_timeout -> unit) (x : t) : unit =
   x |> Internal.set_ontimeout cb
 
-let get_ontimeout (x : t) : event_timeout -> unit = x##ontimeout
+let get_ontimeout (x : t) : event_timeout -> unit = x |> Internal.ontimeout
 
 let set_onloadend (cb : event_loadend -> unit) (x : t) : unit =
-  x Internal.set_onloadend cb
+  x |> Internal.set_onloadend cb
 
-let get_onloadend (x : t) : event_loadend -> unit = x##onloadend
+let get_onloadend (x : t) : event_loadend -> unit = x |> Internal.onloadend

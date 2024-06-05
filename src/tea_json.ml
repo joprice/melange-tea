@@ -436,7 +436,7 @@ module Encoder = struct
 
   let bool (v : bool) = Json.of_type Json.Boolean v
 
-  let null = Json.of_type Json.Null Json.null
+  let null : t = Js.Json.null
 
   let object_ v =
     let aux o (k, v) =

@@ -496,11 +496,12 @@ and patchVNodesOnElems_MutateNode (callbacks : 'msg applicationCallbacks ref)
               then ()
               else
                 let () =
-                  Js.log
+                  Js.log3
                     "VDom:  Failed swapping properties because the property \
                      list length changed, use `noProp` to swap properties \
                      instead, not by altering the list structure.  This is a \
                      massive inefficiency until this issue is resolved."
+                    oldProperties newProperties
                 in
                 patchVNodesOnElems_ReplaceNode callbacks elem elems idx newNode
             in
@@ -704,7 +705,8 @@ let wrapCallbacks_On : type a b. (a -> b) -> a systemMessage -> b systemMessage
   | RemoveRenderMsg msg ->
       RemoveRenderMsg (func msg)
 
-let wrapCallbacks : type a b.
+let wrapCallbacks :
+    type a b.
     (a -> b) -> b applicationCallbacks ref -> a applicationCallbacks ref =
  fun func callbacks ->
   Obj.magic ref

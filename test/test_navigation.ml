@@ -27,6 +27,7 @@ let shutdown _model = Cmd.none
 
 let main =
   Tea.Debug.navigationProgram
+    ~getLocation:(fun () -> Webapi.Dom.location)
     (fun location -> Route location)
     {init; update; view; subscriptions; shutdown}
     (function Route _ -> "route" | Goto path -> "Goto " ^ path)

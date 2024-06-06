@@ -77,7 +77,7 @@ let back step = go (-step)
 
 let forward step = go step
 
-let navigationProgram locationToMessage stuff =
+let navigationProgram ?(getLocation = getLocation) locationToMessage stuff =
   let init flag = stuff.init flag (getLocation ()) in
   let subscriptions model =
     Tea_sub.batch [subscribe locationToMessage; stuff.subscriptions model]

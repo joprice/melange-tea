@@ -5,7 +5,7 @@ open Events
 type message = Route of Webapi.Dom.Location.t | Goto of string
 [@@deriving accessors]
 
-let init () location = (location, Tea.Cmd.none)
+let init () = (Webapi.Dom.location, Tea.Cmd.none)
 
 let update model (message : message) =
   match message with
@@ -27,7 +27,6 @@ let shutdown _model = Cmd.none
 
 let main =
   Tea.Debug.navigationProgram
-    ~getLocation:(fun () -> Webapi.Dom.location)
     (fun location -> Route location)
     {init; update; view; subscriptions; shutdown}
     (function Route _ -> "route" | Goto path -> "Goto " ^ path)

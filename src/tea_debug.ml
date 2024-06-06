@@ -301,7 +301,7 @@ let debug_navigation_program :
   let init_debug, update', view', subscriptions', shutdown' =
     debug string_of_msg update view subscriptions shutdown
   in
-  { init= (fun flags location -> init flags location |> init_debug)
+  { init= (fun flags -> init flags |> init_debug)
   ; update= update'
   ; view= view'
   ; subscriptions= subscriptions'
@@ -350,18 +350,17 @@ let program :
   Tea_app.program debugged opnode flags
 
 let navigationProgram :
-       ?getLocation:(unit -> Dom.location)
-    -> (Webapi.Dom.Location.t -> 'msg)
+       (Webapi.Dom.Location.t -> 'msg)
     -> ('flags, 'model, 'msg) Tea_navigation.navigationProgram
     -> ('msg -> string)
     -> Dom.node option
     -> 'flags
     -> 'msg debug_msg Tea_app.programInterface =
- fun ?getLocation location_to_msg {init; update; view; subscriptions; shutdown}
-     string_of_msg opnode flags ->
+ fun location_to_msg {init; update; view; subscriptions; shutdown} string_of_msg
+     opnode flags ->
   let location location = location |> location_to_msg |> client_msg in
   let debugged =
     debug_navigation_program string_of_msg
       {init; update; view; subscriptions; shutdown}
   in
-  Tea_navigation.navigationProgram ?getLocation location debugged opnode flags
+  Tea_navigation.navigationProgram location debugged opnode flags

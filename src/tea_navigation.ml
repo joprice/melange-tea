@@ -1,13 +1,13 @@
 type ('flags, 'model, 'msg) navigationProgram =
-  { init: 'flags -> Webapi.Dom.Location.t -> 'model * 'msg Tea_cmd.t
+  { init: 'flags -> 'model * 'msg Tea_cmd.t
   ; update: 'model -> 'msg -> 'model * 'msg Tea_cmd.t
   ; view: 'model -> 'msg Vdom.t
   ; subscriptions: 'model -> 'msg Tea_sub.t
   ; shutdown: 'model -> 'msg Tea_cmd.t }
 
-open struct
-  let getLocation () = Webapi.Dom.(location)
+let getLocation () = Webapi.Dom.(location)
 
+open struct
   let notifier : (Webapi.Dom.Location.t -> unit) option ref = ref None
 
   let notifyUrlChange () =
@@ -77,8 +77,8 @@ let back step = go (-step)
 
 let forward step = go step
 
-let navigationProgram ?(getLocation = getLocation) locationToMessage stuff =
-  let init flag = stuff.init flag (getLocation ()) in
+let navigationProgram locationToMessage stuff =
+  let init flag = stuff.init flag in
   let subscriptions model =
     Tea_sub.batch [subscribe locationToMessage; stuff.subscriptions model]
   in

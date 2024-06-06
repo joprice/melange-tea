@@ -77,10 +77,11 @@ let back step = go (-step)
 
 let forward step = go step
 
-let navigationProgram locationToMessage stuff =
+let navigationProgram ?(ssr = false) locationToMessage stuff =
   let init flag = stuff.init flag in
   let subscriptions model =
-    Tea_sub.batch [subscribe locationToMessage; stuff.subscriptions model]
+    if ssr then stuff.subscriptions model
+    else Tea_sub.batch [subscribe locationToMessage; stuff.subscriptions model]
   in
   let open Tea_app in
   program

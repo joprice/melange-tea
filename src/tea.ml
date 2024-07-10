@@ -19,3 +19,4 @@ module Http = Tea_http
 module Ex = Tea_ex
 module Web = Web
 module Vdom = Vdom
+module Promise = Tea_promise

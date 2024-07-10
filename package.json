@@ -1,0 +1,20 @@
+{
+  "name": "melange-tea-test",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "build": "dune build",
+    "dev": "dune build && concurrently 'npm:vite-dev' 'npm:dune-watch'",
+    "dune-watch": "CLICOLOR_FORCE=1 dune build -w",
+    "serve": "dune build && vite preview",
+    "vite-dev": "vite --force"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "concurrently": "^8.2.2",
+    "vite": "^4.5.0",
+    "vite-plugin-melange": "^2.2.0"
+  }
+}
